@@ -23,8 +23,27 @@ def start_room():
         print(room_code)
         
         # save room in db
-        #room_created = mysql.query_db(f"INSERT INTO polls (title, admin, password, room_id) VALUES ('{request.form['title']}','{request.form['name']}', '{request.form['password']}', '{room_code}')")
+        room_created = mysql.query_db(f"INSERT INTO polls (title, admin, password, poll_id) VALUES ('{request.form['title']}','{request.form['name']}', '{request.form['password']}', '{room_code}')")
+        if room_created:
+            return redirect(f'/options/{room_code}')
+        else:
+            return redirect('/start')
 
+@app.route('/options/<id>')
+def add_options(id):
+    return render_template('create/add_options.html', room=id)
+
+@app.route('/save/<id>', methods=["POST"])
+def save_poll(id):
+    query = "INSERT INTO options (description, poll_id) VALUES"
+    count = 0
+    saved = 0
+    for opt in request.form:
+        if opt != 'id':
+            count += 1
+            if mysql.query_db(f"{query} ('{opt}','{id}');"):
+                saved += 1
+    return "saved" if saved == count else "not saved"
 
 @app.route('/login', methods=["POST"])
 def login():
@@ -32,10 +51,11 @@ def login():
     print(request.form["password"])
     return redirect('/')
 
-@socketio.on('create room')
-def handle_event(room):
-    print("Creating Room: " + room)
-    join_room(room)
+# @socketio.on('create room')
+# def handle_event(room):
+#     print("Creating Room: " + room)
+    # join_room(room)
 
 if __name__ == "__main__":
     socketio.run(app)
+    # app.run(debug=True)

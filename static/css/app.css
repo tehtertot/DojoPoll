@@ -1,0 +1,15 @@
+#wrapper {
+    width: 60%;
+    margin: 10px auto;
+    text-align: center;
+}
+
+.left-num {
+    display: inline-block;
+    width: 7%;
+}
+
+.right-input {
+    display: inline-block;
+    width: 70%;
+}
